@@ -7,15 +7,14 @@ Instructions on how to run main.py. You can run 'python main.py --help' for refe
 Examples:
 
 For developers:
-If it is number encoded: run: python relate.py --num_dev googleDevId
-                        e.x python relate.py --num_dev 8050969478732289508
-If it is character encoded, run python relate.py --str_dev googleDevId_string
-                        e.x python relate.py --str_dev 'zc game'
+Use either the numeric ID value (e.g., https://play.google.com/store/apps/dev?id=9133452689932095671)
+python main.py --dev 9133452689932095671
+
+Or the string ID value, in quotes if there are spaces (e.g. https://play.google.com/store/apps/developer?id=Amazon+Mobile+LLC)
+python main.py --dev "Amazon Mobile LLC"
 
 For category names:
-run: python relate.py --category category_name
-    e.x python relate.py --category 'Game Puzzle'
-
+python main.py --category 'Game Puzzle'
 
 ###########################################
 

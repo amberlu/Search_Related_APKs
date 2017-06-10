@@ -5,23 +5,23 @@ import re
 import sys
 from category import check_error
 
-def get_developer_related(developer_name, type=0):
+def get_developer_related(developer_name):
     """ Given a developer name, the function returns a set of its package names 
         :params:
                 developer_name: a string of the  developer name 
-                type: 0 --> number encoded; 1 --> character encoded
         :output: a set of package names in unicode version
     """
 
     apk_lst = set()
     
     # If developer_name is number encoded
-    if type == 0:
+    if _is_numeric_id(developer_name):
         # Visit the main webpage of the developer    
         apk_base_url = 'https://play.google.com/store/apps/dev?id='
         apk_url = apk_base_url + developer_name + '&hl=en'
         r = requests.get(apk_url)
         if check_error(r, apk_url):
+           logging.error('check_error triggered for apk_url %s' % apk_url)
            return 
 
         data = r.text
@@ -42,6 +42,7 @@ def get_developer_related(developer_name, type=0):
             data = {'pageNum': str(count), 'xhr': '1', 'sp': sp, 'pagTok': pg_token}
             r = requests.post(search_url, data=data, headers=headers)
             if check_error(r, search_url):
+                logging.error('check_error triggered for search_url %s' % search_url)
                 break
             response = r.text
             
@@ -59,7 +60,7 @@ def get_developer_related(developer_name, type=0):
             count += 1
     
     # If developer_name is character encoded
-    elif type == 1:
+    else:
         # Convert developer_name into the correct format
         developer_name = _parse_developer_name(developer_name)
         base_url = 'https://play.google.com/store/apps/developer?id='
@@ -94,7 +95,7 @@ def get_developer_related(developer_name, type=0):
 def _parse_developer_name(developer_name):
     if ' ' in developer_name:
         developer_name = '+'.join(developer_name.split(' '))        
-    return developer_name.upper()
+    return developer_name
 
 def get_next_page_token(data):
     token = re.findall(r'([a-zA-Z0-9:]+)', data)[-1]
@@ -104,6 +105,17 @@ def search_apk(soup, apk_lst):
     for app in soup.find_all('span', class_='preview-overlay-container'):
         apk_lst.add(app.get('data-docid'))
     return apk_lst
+
+def _is_numeric_id(dev_id):
+    # At least 15 digits, all numbers
+    is_num_id = len(dev_id) >= 15 and dev_id.isdigit()
+
+    if(is_num_id):
+        logging.info('%s is a numeric ID' % dev_id)
+    else:
+        logging.info('%s is a string ID' % dev_id)
+
+    return is_num_id
 
 # TODO: uncomment this part if using this file independently
 #if __name__ == '__main__':
