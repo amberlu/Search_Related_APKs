@@ -13,10 +13,6 @@ def _parse_args():
     return parser.parse_args()
 
 def _show_output(apk_list):
-    apk_count = len(apk_list)
-    if(apk_count > 0):
-        print('---%d packages found---' % apk_count)
-
     for apk in apk_list:
         print(apk)
 
